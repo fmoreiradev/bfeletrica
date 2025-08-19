@@ -1,0 +1,3137 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BF ELÉTRICA | Manutenção Elétrica Predial Inteligente</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@300;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      /* RESET ELÉTRICO AVANÇADO */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Rajdhani", "Orbitron", sans-serif;
+        -webkit-tap-highlight-color: transparent;
+        scroll-behavior: smooth;
+      }
+
+      /* VARIÁVEIS DE TEMAS */
+      :root {
+        --spark-time: 0.6s;
+        --energy-glow: 0 0 10px, 0 0 20px, 0 0 30px;
+        --primary: #0a0a12;
+        --secondary: #161626;
+        --accent: #f5d742;
+        --danger: #ff3860;
+        --success: #09c372;
+        --text: #e6f1ff;
+        --shadow: 0 0 10px #f5d742, 0 0 20px #f5d74255, 0 0 30px #f5d74233;
+        --card-bg: rgba(30, 30, 50, 0.3);
+        --section-padding: 10vh 5vw;
+        --nav-height: 80px;
+      }
+
+      body {
+        background-color: var(--primary);
+        color: var(--text);
+        overflow-x: hidden;
+        perspective: 1000px;
+        min-height: 100vh;
+        position: relative;
+      }
+
+      /* TEMAS ENERGÉTICOS */
+      .energy-theme {
+        --primary: #12100a;
+        --secondary: #1e1a16;
+        --accent: #f5d742;
+        --danger: #ff3860;
+        --success: #09c372;
+        --text: #fff9e6;
+        --shadow: 0 0 10px #f5d742, 0 0 20px #f5d74255, 0 0 30px #f5d74233;
+        --card-bg: rgba(70, 60, 30, 0.3);
+      }
+
+      .industrial-theme {
+        --primary: #0a0a12;
+        --secondary: #161626;
+        --accent: #64ffda;
+        --danger: #ff3860;
+        --success: #09c372;
+        --text: #e6f1ff;
+        --shadow: 0 0 10px #64ffda, 0 0 20px #64ffda55, 0 0 30px #64ffda33;
+        --card-bg: rgba(30, 30, 50, 0.3);
+      }
+
+      .safety-theme {
+        --primary: #120a0a;
+        --secondary: #261616;
+        --accent: #ff5e5e;
+        --danger: #ff3860;
+        --success: #09c372;
+        --text: #ffe6e6;
+        --shadow: 0 0 10px #ff5e5e, 0 0 20px #ff5e5e55, 0 0 30px #ff5e5e33;
+        --card-bg: rgba(70, 30, 30, 0.3);
+      }
+
+      /* FUNDO DE CIRCUITOS */
+      .circuit-bg {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -2;
+        background: radial-gradient(
+            ellipse at center,
+            var(--primary) 0%,
+            #000000 100%
+          ),
+          linear-gradient(
+            to right,
+            rgba(245, 215, 66, 0.05) 1px,
+            transparent 1px
+          ),
+          linear-gradient(
+            to bottom,
+            rgba(245, 215, 66, 0.05) 1px,
+            transparent 1px
+          );
+        background-size: 100% 100%, 50px 50px, 50px 50px;
+        overflow: hidden;
+        opacity: 0.8;
+      }
+
+      .circuit-node {
+        position: absolute;
+        width: 8px;
+        height: 8px;
+        background: var(--accent);
+        border-radius: 50%;
+        box-shadow: 0 0 10px var(--accent);
+        animation: pulse 2s infinite alternate;
+      }
+
+      @keyframes pulse {
+        0% {
+          transform: scale(1);
+          opacity: 0.3;
+        }
+
+        100% {
+          transform: scale(1.3);
+          opacity: 0.8;
+        }
+      }
+
+      /* NAVEGAÇÃO ENERGÉTICA */
+      .energy-nav {
+        position: fixed;
+        bottom: 2vh;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 1000;
+        display: flex;
+        gap: 1.5vw;
+        background: rgba(10, 10, 20, 0.7);
+        backdrop-filter: blur(10px);
+        padding: 15px;
+        border-radius: 50px;
+        border: 1px solid rgba(245, 215, 66, 0.2);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+      }
+
+      .nav-fuse {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: var(--secondary);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        transition: all var(--spark-time) ease;
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+        position: relative;
+        overflow: hidden;
+        border: 2px solid var(--accent);
+      }
+
+      .nav-fuse::before {
+        content: "";
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background: radial-gradient(
+          circle at 30% 30%,
+          var(--accent) 0%,
+          transparent 70%
+        );
+        opacity: 0.3;
+      }
+
+      .nav-fuse:hover {
+        transform: scale(1.2) translateY(-10px);
+        box-shadow: var(--shadow);
+      }
+
+      .nav-fuse.active {
+        transform: scale(1.3) translateY(-15px);
+        box-shadow: var(--shadow);
+        background: var(--accent);
+        color: var(--primary);
+      }
+
+      .nav-fuse i {
+        font-size: 1.5rem;
+        transition: all var(--spark-time) ease;
+      }
+
+      .nav-fuse.active i {
+        color: var(--primary);
+        transform: rotate(360deg);
+      }
+
+      .nav-tooltip {
+        position: absolute;
+        bottom: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        background: var(--secondary);
+        color: var(--text);
+        padding: 5px 10px;
+        border-radius: 5px;
+        font-size: 0.8rem;
+        white-space: nowrap;
+        opacity: 0;
+        visibility: hidden;
+        transition: all var(--spark-time) ease;
+        margin-bottom: 10px;
+        border: 1px solid var(--accent);
+      }
+
+      .nav-fuse:hover .nav-tooltip {
+        opacity: 1;
+        visibility: visible;
+        transform: translateX(-50%) translateY(-5px);
+      }
+
+      /* CENTRAL ENERGÉTICA */
+      .energy-core {
+        position: relative;
+        min-height: 100vh;
+        overflow: hidden;
+        padding-top: var(--nav-height);
+      }
+
+      .transformer {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        width: 300vw;
+        height: 300vw;
+        background: radial-gradient(
+          circle at center,
+          var(--accent) 0%,
+          transparent 70%
+        );
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        opacity: 0.03;
+        z-index: -1;
+        animation: energyPulse 15s infinite alternate;
+      }
+
+      @keyframes energyPulse {
+        0% {
+          transform: translate(-50%, -50%) scale(1);
+          opacity: 0.03;
+        }
+
+        100% {
+          transform: translate(-50%, -50%) scale(1.2);
+          opacity: 0.08;
+        }
+      }
+
+      /* SEÇÃO PRINCIPAL */
+      section {
+        min-height: 100vh;
+        padding: var(--section-padding);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .section-container {
+        max-width: 1400px;
+        margin: 0 auto;
+      }
+
+      .section-title {
+        font-size: clamp(2rem, 5vw, 4rem);
+        margin-bottom: 5vh;
+        position: relative;
+        display: inline-block;
+        text-transform: uppercase;
+        letter-spacing: 3px;
+        font-weight: 700;
+        font-family: "Orbitron", sans-serif;
+      }
+
+      .section-title::after {
+        content: "";
+        position: absolute;
+        bottom: -10px;
+        left: 0;
+        width: 50%;
+        height: 3px;
+        background: var(--accent);
+        box-shadow: var(--shadow);
+        transition: width 0.5s ease;
+      }
+
+      .section-title:hover::after {
+        width: 100%;
+      }
+
+      .section-subtitle {
+        font-size: 1.2rem;
+        color: var(--accent);
+        margin-bottom: 2rem;
+        max-width: 800px;
+        line-height: 1.6;
+      }
+
+      /* CARD DE ENERGIA */
+      .energy-card {
+        background: var(--card-bg);
+        backdrop-filter: blur(10px);
+        border-radius: 15px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        border: 1px solid rgba(245, 215, 66, 0.2);
+        box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+        transition: all var(--spark-time) ease;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .energy-card::before {
+        content: "";
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: linear-gradient(
+          to bottom right,
+          transparent 45%,
+          var(--accent) 50%,
+          transparent 55%
+        );
+        opacity: 0.1;
+        transform: rotate(45deg);
+        transition: all 0.5s ease;
+      }
+
+      .energy-card:hover {
+        transform: translateY(-10px);
+        box-shadow: var(--shadow);
+        border-color: var(--accent);
+      }
+
+      .energy-card:hover::before {
+        animation: energyFlow 3s linear infinite;
+      }
+
+      .energy-card h3 {
+        color: var(--accent);
+        margin-bottom: 1rem;
+        font-size: 1.5rem;
+        position: relative;
+        display: inline-block;
+      }
+
+      .energy-card h3::after {
+        content: "";
+        position: absolute;
+        bottom: -5px;
+        left: 0;
+        width: 40px;
+        height: 2px;
+        background: var(--accent);
+        transition: width 0.3s ease;
+      }
+
+      .energy-card:hover h3::after {
+        width: 100%;
+      }
+
+      .energy-card p {
+        line-height: 1.8;
+        margin-bottom: 1rem;
+      }
+
+      @keyframes energyFlow {
+        0% {
+          transform: rotate(45deg) translateY(-100%);
+        }
+
+        100% {
+          transform: rotate(45deg) translateY(100%);
+        }
+      }
+
+      /* SEÇÃO HOME */
+      #home {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        position: relative;
+      }
+
+      .hero-content {
+        max-width: 900px;
+        margin: 0 auto;
+        position: relative;
+        z-index: 1;
+      }
+
+      .hero-title {
+        font-size: clamp(2.5rem, 6vw, 5rem);
+        margin-bottom: 2rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 5px;
+        font-family: "Orbitron", sans-serif;
+        position: relative;
+        display: inline-block;
+      }
+
+      .hero-title .spark {
+        display: inline-block;
+        position: relative;
+      }
+
+      .hero-subtitle {
+        font-size: clamp(1rem, 3vw, 1.5rem);
+        margin-bottom: 3rem;
+        line-height: 1.6;
+        max-width: 700px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      .typing-animation {
+        display: inline-block;
+        border-right: 3px solid var(--accent);
+        white-space: nowrap;
+        overflow: hidden;
+        animation: typing 3.5s steps(40, end),
+          blink-caret 0.75s step-end infinite;
+        font-family: "Orbitron", sans-serif;
+        font-weight: 500;
+      }
+
+      .hero-buttons {
+        display: flex;
+        gap: 1.5rem;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin-top: 3rem;
+      }
+
+      /* SEÇÃO SOBRE */
+      #about {
+        background: radial-gradient(
+          ellipse at top,
+          rgba(22, 22, 38, 0.5) 0%,
+          transparent 70%
+        );
+      }
+
+      .about-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 3rem;
+      }
+
+      .about-image {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .about-image-placeholder {
+        width: 100%;
+        height: 400px;
+        background: rgba(245, 215, 66, 0.1);
+        border: 2px dashed var(--accent);
+        border-radius: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .about-image-placeholder::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(
+          45deg,
+          transparent 48%,
+          var(--accent) 50%,
+          transparent 52%
+        );
+        background-size: 5px 5px;
+        opacity: 0.1;
+      }
+
+      .skills-container {
+        margin-top: 3rem;
+      }
+
+      .skill-item {
+        margin-bottom: 1.5rem;
+      }
+
+      .skill-info {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 0.5rem;
+      }
+
+      /* SEÇÃO SERVIÇOS */
+      #services {
+        background: radial-gradient(
+          ellipse at bottom,
+          rgba(22, 22, 38, 0.5) 0%,
+          transparent 70%
+        );
+      }
+
+      .services-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 2rem;
+      }
+
+      .service-card {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .service-icon {
+        font-size: 2.5rem;
+        margin-bottom: 1.5rem;
+        color: var(--accent);
+      }
+
+      /* SEÇÃO CLIENTES */
+      #clients {
+        background: radial-gradient(
+          ellipse at center,
+          rgba(22, 22, 38, 0.5) 0%,
+          transparent 70%
+        );
+      }
+
+      .clients-filter {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+      }
+
+      .energy-clients {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 2rem;
+      }
+
+      .client-card {
+        transition: all 0.3s ease;
+        cursor: pointer;
+      }
+
+      .client-card:hover {
+        transform: translateY(-5px) scale(1.02);
+      }
+
+      .client-phase {
+        display: inline-block;
+        padding: 0.3rem 0.8rem;
+        background: rgba(245, 215, 66, 0.1);
+        border-radius: 20px;
+        font-size: 0.8rem;
+        margin-bottom: 1rem;
+      }
+
+      /* SEÇÃO CONTATO */
+      #contact {
+        background: radial-gradient(
+          ellipse at top left,
+          rgba(22, 22, 38, 0.5) 0%,
+          transparent 70%
+        );
+      }
+
+      .contact-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 3rem;
+      }
+
+      .contact-info-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 1.5rem;
+      }
+
+      .contact-icon {
+        width: 50px;
+        height: 50px;
+        background: rgba(245, 215, 66, 0.1);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 1.5rem;
+        font-size: 1.2rem;
+        flex-shrink: 0;
+      }
+
+      .social-links {
+        display: flex;
+        gap: 1rem;
+        margin-top: 2rem;
+      }
+
+      .social-link {
+        width: 50px;
+        height: 50px;
+        background: var(--secondary);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--text);
+        transition: all var(--spark-time) ease;
+        font-size: 1.2rem;
+        text-decoration: none;
+        border: 1px solid rgba(245, 215, 66, 0.2);
+      }
+
+      .social-link:hover {
+        background: var(--accent);
+        color: var(--primary);
+        transform: translateY(-5px);
+        box-shadow: var(--shadow);
+      }
+
+      .contact-form input,
+      .contact-form textarea,
+      .contact-form select {
+        width: 100%;
+        padding: 1rem;
+        background: rgba(245, 215, 66, 0.1);
+        border: 1px solid var(--accent);
+        border-radius: 5px;
+        color: var(--text);
+        margin-bottom: 1.5rem;
+        transition: all var(--spark-time) ease;
+      }
+
+      .contact-form input:focus,
+      .contact-form textarea:focus,
+      .contact-form select:focus {
+        outline: none;
+        box-shadow: var(--shadow);
+        background: rgba(245, 215, 66, 0.2);
+      }
+
+      /* PORTAL DE CLIENTES */
+      .client-portal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.9);
+        z-index: 10000;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        backdrop-filter: blur(10px);
+        animation: portalOpen 0.5s ease-out;
+      }
+
+      .client-energy {
+        width: 90%;
+        max-width: 1200px;
+        max-height: 90vh;
+        overflow-y: auto;
+        background: var(--secondary);
+        border-radius: 20px;
+        padding: 2rem;
+        border: 2px solid var(--accent);
+        box-shadow: var(--shadow);
+        position: relative;
+      }
+
+      .close-portal {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        width: 40px;
+        height: 40px;
+        background: var(--accent);
+        color: var(--primary);
+        border: none;
+        border-radius: 50%;
+        font-size: 1.5rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all var(--spark-time) ease;
+      }
+
+      .close-portal:hover {
+        transform: rotate(180deg) scale(1.2);
+      }
+
+      .client-content {
+        padding: 1rem;
+      }
+
+      /* BOTÕES DE ENERGIA */
+      .energy-btn {
+        background: transparent;
+        border: 2px solid var(--accent);
+        color: var(--accent);
+        padding: 0.8rem 1.8rem;
+        border-radius: 50px;
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+        transition: all var(--spark-time) ease;
+        font-weight: bold;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        z-index: 1;
+        font-family: "Orbitron", sans-serif;
+        font-size: 0.9rem;
+      }
+
+      .energy-btn::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: var(--accent);
+        z-index: -1;
+        transform: scaleX(0);
+        transform-origin: left;
+        transition: transform var(--spark-time) ease;
+      }
+
+      .energy-btn:hover {
+        color: var(--primary);
+        box-shadow: var(--shadow);
+      }
+
+      .energy-btn:hover::before {
+        transform: scaleX(1);
+      }
+
+      .energy-btn.secondary {
+        border-color: var(--text);
+        color: var(--text);
+      }
+
+      .energy-btn.secondary::before {
+        background: var(--text);
+      }
+
+      .energy-btn.secondary:hover {
+        color: var(--primary);
+      }
+
+      .energy-btn.danger {
+        border-color: var(--danger);
+        color: var(--danger);
+      }
+
+      .energy-btn.danger::before {
+        background: var(--danger);
+      }
+
+      .energy-btn.danger:hover {
+        color: var(--text);
+      }
+
+      .energy-btn.success {
+        border-color: var(--success);
+        color: var(--success);
+      }
+
+      .energy-btn.success::before {
+        background: var(--success);
+      }
+
+      .energy-btn.success:hover {
+        color: var(--text);
+      }
+
+      /* BARRA DE PROGRESSO */
+      .energy-track {
+        height: 10px;
+        background: var(--secondary);
+        border-radius: 5px;
+        margin: 1rem 0;
+        overflow: hidden;
+        position: relative;
+        border: 1px solid rgba(245, 215, 66, 0.2);
+      }
+
+      .energy-progress {
+        height: 100%;
+        background: var(--accent);
+        border-radius: 5px;
+        position: relative;
+        transition: width 1s ease;
+      }
+
+      .energy-progress::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 255, 255, 0.3),
+          transparent
+        );
+        animation: progressShine 2s infinite;
+      }
+
+      @keyframes progressShine {
+        0% {
+          transform: translateX(-100%);
+        }
+
+        100% {
+          transform: translateX(100%);
+        }
+      }
+
+      /* TEMAS FLUTUANTES */
+      .theme-switcher {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        display: flex;
+        gap: 10px;
+        z-index: 1000;
+        background: rgba(10, 10, 20, 0.7);
+        backdrop-filter: blur(10px);
+        padding: 10px;
+        border-radius: 30px;
+        border: 1px solid rgba(245, 215, 66, 0.2);
+      }
+
+      .theme-option {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        cursor: pointer;
+        transition: all var(--spark-time) ease;
+        border: 2px solid transparent;
+        box-shadow: 0 0 5px currentColor;
+      }
+
+      .theme-option:hover {
+        transform: scale(1.2) rotate(20deg);
+      }
+
+      .theme-option.active {
+        transform: scale(1.3);
+        box-shadow: 0 0 15px currentColor;
+        border-color: white;
+      }
+
+      /* EFEITO DE ENERGIA */
+      .energy-effect {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: radial-gradient(
+          circle at center,
+          var(--accent) 0%,
+          transparent 70%
+        );
+        opacity: 0;
+        pointer-events: none;
+        z-index: 100000;
+        animation: energySurge 1s ease-out;
+      }
+
+      @keyframes energySurge {
+        0% {
+          transform: scale(0.1);
+          opacity: 0.8;
+        }
+
+        100% {
+          transform: scale(3);
+          opacity: 0;
+        }
+      }
+
+      /* ANIMAÇÕES DE DIGITAÇÃO */
+      @keyframes typing {
+        from {
+          width: 0;
+        }
+
+        to {
+          width: 100%;
+        }
+      }
+
+      @keyframes blink-caret {
+        from,
+        to {
+          border-color: transparent;
+        }
+
+        50% {
+          border-color: var(--accent);
+        }
+      }
+
+      /* EFEITOS ESPECIAIS */
+      .spark {
+        position: relative;
+      }
+
+      .spark::before,
+      .spark::after {
+        content: attr(data-text);
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0.8;
+      }
+
+      .spark::before {
+        color: #f5d742;
+        z-index: -1;
+        animation: spark-effect 3s infinite;
+      }
+
+      .spark::after {
+        color: #ff5e5e;
+        z-index: -2;
+        animation: spark-effect 2s infinite reverse;
+      }
+
+      @keyframes spark-effect {
+        0% {
+          transform: translate(0);
+        }
+
+        20% {
+          transform: translate(-3px, 3px);
+        }
+
+        40% {
+          transform: translate(-3px, -3px);
+        }
+
+        60% {
+          transform: translate(3px, 3px);
+        }
+
+        80% {
+          transform: translate(3px, -3px);
+        }
+
+        100% {
+          transform: translate(0);
+        }
+      }
+
+      /* SCROLLBAR PERSONALIZADA */
+      ::-webkit-scrollbar {
+        width: 10px;
+      }
+
+      ::-webkit-scrollbar-track {
+        background: var(--primary);
+      }
+
+      ::-webkit-scrollbar-thumb {
+        background: var(--accent);
+        border-radius: 5px;
+      }
+
+      ::-webkit-scrollbar-thumb:hover {
+        background: #d4b93a;
+      }
+
+      /* RESPONSIVIDADE */
+      @media (max-width: 1024px) {
+        .about-grid,
+        .contact-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .about-image {
+          order: -1;
+        }
+
+        .section-title::after {
+          width: 30%;
+        }
+      }
+
+      @media (max-width: 768px) {
+        .energy-nav {
+          width: 90%;
+          justify-content: space-around;
+          padding: 10px;
+          bottom: 1vh;
+        }
+
+        .nav-fuse {
+          width: 50px;
+          height: 50px;
+        }
+
+        .nav-tooltip {
+          font-size: 0.7rem;
+          padding: 3px 8px;
+        }
+
+        .hero-buttons {
+          flex-direction: column;
+          align-items: center;
+        }
+
+        .energy-btn {
+          width: 100%;
+          max-width: 250px;
+        }
+
+        .energy-clients,
+        .services-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .section-title {
+          font-size: 2rem;
+        }
+
+        .theme-switcher {
+          top: 10px;
+          right: 10px;
+          padding: 8px;
+        }
+
+        .theme-option {
+          width: 25px;
+          height: 25px;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .energy-nav {
+          width: 95%;
+          gap: 5px;
+        }
+
+        .nav-fuse {
+          width: 40px;
+          height: 40px;
+        }
+
+        .nav-fuse i {
+          font-size: 1rem;
+        }
+
+        .section-title {
+          font-size: 1.8rem;
+        }
+
+        .hero-title {
+          font-size: 2rem;
+        }
+
+        .hero-subtitle {
+          font-size: 1rem;
+        }
+      }
+
+      /* ANIMAÇÃO DE FAÍSCAS */
+      .sparks {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+        overflow: hidden;
+      }
+
+      .spark-particle {
+        position: absolute;
+        background: var(--accent);
+        border-radius: 50%;
+        opacity: 0.5;
+        animation: sparkFloat linear infinite;
+      }
+
+      @keyframes sparkFloat {
+        0% {
+          transform: translateY(0) translateX(0);
+          opacity: 0;
+        }
+
+        10% {
+          opacity: 0.5;
+        }
+
+        100% {
+          transform: translateY(-100vh) translateX(100px);
+          opacity: 0;
+        }
+      }
+
+      /* PLANOS DE MANUTENÇÃO */
+      .plans-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+        margin-top: 3rem;
+      }
+
+      .plan-card {
+        border-radius: 15px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        position: relative;
+      }
+
+      .plan-card:hover {
+        transform: translateY(-10px);
+        box-shadow: var(--shadow);
+      }
+
+      .plan-header {
+        padding: 1.5rem;
+        text-align: center;
+        background: rgba(245, 215, 66, 0.2);
+        border-bottom: 1px solid rgba(245, 215, 66, 0.3);
+      }
+
+      .plan-title {
+        font-size: 1.5rem;
+        margin-bottom: 0.5rem;
+        color: var(--accent);
+      }
+
+      .plan-price {
+        font-size: 2.5rem;
+        font-weight: bold;
+        margin-bottom: 0.5rem;
+      }
+
+      .plan-period {
+        font-size: 0.9rem;
+        opacity: 0.8;
+      }
+
+      .plan-features {
+        padding: 1.5rem;
+        background: rgba(30, 30, 50, 0.5);
+      }
+
+      .plan-feature {
+        margin-bottom: 0.8rem;
+        display: flex;
+        align-items: center;
+      }
+
+      .plan-feature i {
+        margin-right: 0.5rem;
+        color: var(--accent);
+      }
+
+      .plan-cta {
+        padding: 1.5rem;
+        text-align: center;
+        background: rgba(30, 30, 50, 0.8);
+      }
+
+      /* FORMULÁRIO DE ORÇAMENTO */
+      .budget-form {
+        background: rgba(30, 30, 50, 0.5);
+        padding: 2rem;
+        border-radius: 15px;
+        margin-top: 2rem;
+      }
+
+      .form-group {
+        margin-bottom: 1.5rem;
+      }
+
+      .form-label {
+        display: block;
+        margin-bottom: 0.5rem;
+        color: var(--accent);
+      }
+
+      .form-control {
+        width: 100%;
+        padding: 0.8rem;
+        background: rgba(245, 215, 66, 0.1);
+        border: 1px solid rgba(245, 215, 66, 0.3);
+        border-radius: 5px;
+        color: var(--text);
+      }
+
+      .form-control:focus {
+        outline: none;
+        box-shadow: var(--shadow);
+        border-color: var(--accent);
+      }
+
+      /* INDICADOR DE SEGURANÇA */
+      .safety-indicator {
+        display: flex;
+        align-items: center;
+        margin-top: 1rem;
+      }
+
+      .safety-level {
+        width: 100%;
+        height: 10px;
+        background: linear-gradient(to right, #ff3860, #f5d742, #09c372);
+        border-radius: 5px;
+        margin-right: 1rem;
+        position: relative;
+      }
+
+      .safety-marker {
+        position: absolute;
+        width: 2px;
+        height: 15px;
+        background: white;
+        top: -2.5px;
+        transform: translateX(-50%);
+      }
+
+      .safety-labels {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 0.5rem;
+        font-size: 0.8rem;
+      }
+
+      /* ANIMAÇÃO DE CARREGAMENTO */
+      .energy-loader {
+        display: inline-block;
+        width: 30px;
+        height: 30px;
+        border: 3px solid rgba(245, 215, 66, 0.3);
+        border-radius: 50%;
+        border-top-color: var(--accent);
+        animation: spin 1s ease-in-out infinite;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      /* MODAL DE EMERGÊNCIA */
+      .emergency-modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.8);
+        z-index: 10000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+      }
+
+      .emergency-modal.active {
+        opacity: 1;
+        visibility: visible;
+      }
+
+      .emergency-content {
+        background: var(--secondary);
+        padding: 2rem;
+        border-radius: 15px;
+        max-width: 500px;
+        width: 90%;
+        border: 2px solid var(--danger);
+        box-shadow: 0 0 20px var(--danger);
+        position: relative;
+      }
+
+      .emergency-close {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        background: none;
+        border: none;
+        color: var(--text);
+        font-size: 1.5rem;
+        cursor: pointer;
+      }
+
+      /* TIMELINE DE PROJETOS */
+      .timeline {
+        position: relative;
+        max-width: 1200px;
+        margin: 3rem auto;
+      }
+
+      .timeline::after {
+        content: "";
+        position: absolute;
+        width: 2px;
+        background: var(--accent);
+        top: 0;
+        bottom: 0;
+        left: 50%;
+        margin-left: -1px;
+      }
+
+      .timeline-item {
+        padding: 10px 40px;
+        position: relative;
+        width: 50%;
+        box-sizing: border-box;
+      }
+
+      .timeline-item::after {
+        content: "";
+        position: absolute;
+        width: 20px;
+        height: 20px;
+        background: var(--accent);
+        border-radius: 50%;
+        top: 15px;
+        z-index: 1;
+      }
+
+      .left {
+        left: 0;
+      }
+
+      .right {
+        left: 50%;
+      }
+
+      .left::after {
+        right: -10px;
+      }
+
+      .right::after {
+        left: -10px;
+      }
+
+      .timeline-content {
+        padding: 20px;
+        background: rgba(30, 30, 50, 0.5);
+        border-radius: 10px;
+        border: 1px solid rgba(245, 215, 66, 0.3);
+      }
+
+      @media (max-width: 768px) {
+        .timeline::after {
+          left: 31px;
+        }
+
+        .timeline-item {
+          width: 100%;
+          padding-left: 70px;
+          padding-right: 25px;
+        }
+
+        .timeline-item::after {
+          left: 21px;
+        }
+
+        .right {
+          left: 0%;
+        }
+      }
+
+      /* MENU FLUTUANTE */
+      .floating-menu-btn {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        width: 60px;
+        height: 60px;
+        background: var(--accent);
+        color: var(--primary);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        z-index: 999;
+        box-shadow: 0 0 15px rgba(245, 215, 66, 0.5);
+        transition: all 0.3s ease;
+        font-size: 1.5rem;
+      }
+
+      .floating-menu-btn:hover {
+        transform: scale(1.1) rotate(90deg);
+        box-shadow: 0 0 25px rgba(245, 215, 66, 0.8);
+      }
+
+      .floating-menu {
+        position: fixed;
+        bottom: 100px;
+        right: 30px;
+        background: var(--secondary);
+        border-radius: 15px;
+        padding: 15px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        z-index: 998;
+        display: none;
+        flex-direction: column;
+        gap: 10px;
+        border: 1px solid var(--accent);
+        width: 200px;
+      }
+
+      .floating-menu a {
+        color: var(--text);
+        text-decoration: none;
+        padding: 10px 15px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        transition: all 0.3s ease;
+      }
+
+      .floating-menu a:hover {
+        background: rgba(245, 215, 66, 0.2);
+        transform: translateX(-5px);
+      }
+
+      .floating-menu a i {
+        width: 20px;
+        text-align: center;
+      }
+
+      /* Responsividade para dispositivos móveis */
+      @media (max-width: 768px) {
+        .floating-menu-btn {
+          width: 50px;
+          height: 50px;
+          font-size: 1.2rem;
+          bottom: 20px;
+          right: 20px;
+        }
+
+        .floating-menu {
+          bottom: 80px;
+          right: 20px;
+          width: 180px;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .floating-menu-btn {
+          width: 45px;
+          height: 45px;
+          font-size: 1rem;
+          bottom: 15px;
+          right: 15px;
+        }
+
+        .floating-menu {
+          bottom: 70px;
+          right: 15px;
+          width: 160px;
+          font-size: 0.9rem;
+        }
+      }
+    </style>
+  </head>
+
+  <body class="energy-theme">
+    <!-- FUNDO DE CIRCUITOS -->
+    <div class="circuit-bg" id="circuitBg"></div>
+
+    <!-- FAÍSCAS DE ENERGIA -->
+    <div class="sparks" id="sparks"></div>
+
+    <!-- TRANSFORMER CENTRAL -->
+    <div class="transformer"></div>
+
+    <!-- NAVEGAÇÃO ENERGÉTICA -->
+    <nav class="energy-nav">
+      <div class="nav-fuse active" data-section="home">
+        <i class="fas fa-bolt"></i>
+        <span class="nav-tooltip">Energia</span>
+      </div>
+      <div class="nav-fuse" data-section="about">
+        <i class="fas fa-building"></i>
+        <span class="nav-tooltip">Sobre</span>
+      </div>
+      <div class="nav-fuse" data-section="plans">
+        <i class="fas fa-clipboard-list"></i>
+        <span class="nav-tooltip">Planos</span>
+      </div>
+      <div class="nav-fuse" data-section="services">
+        <i class="fas fa-tools"></i>
+        <span class="nav-tooltip">Serviços</span>
+      </div>
+      <div class="nav-fuse" data-section="clients">
+        <i class="fas fa-users"></i>
+        <span class="nav-tooltip">Clientes</span>
+      </div>
+      <div class="nav-fuse" data-section="contact">
+        <i class="fas fa-envelope"></i>
+        <span class="nav-tooltip">Contato</span>
+      </div>
+    </nav>
+
+    <!-- TROCA DE TEMAS -->
+    <div class="theme-switcher">
+      <div
+        class="theme-option active"
+        data-theme="energy"
+        style="background: #f5d742"
+        title="Tema Energia"
+      ></div>
+      <div
+        class="theme-option"
+        data-theme="industrial"
+        style="background: #64ffda"
+        title="Tema Industrial"
+      ></div>
+      <div
+        class="theme-option"
+        data-theme="safety"
+        style="background: #ff5e5e"
+        title="Tema Segurança"
+      ></div>
+    </div>
+
+    <!-- CENTRAL ENERGÉTICA -->
+    <div class="energy-core">
+      <!-- SEÇÃO HOME -->
+      <section id="home">
+        <div class="section-container">
+          <div class="hero-content">
+            <h1 class="hero-title spark" data-text="BF ELÉTRICA">
+              BF ELÉTRICA
+            </h1>
+            <p class="hero-subtitle">
+              <span
+                class="typing-animation"
+                style="
+                  display: inline-block;
+                  border-right: 3px solid var(--accent);
+                  white-space: nowrap;
+                  overflow: hidden;
+                  animation: typing 3.5s steps(40, end),
+                    blink-caret 0.75s step-end infinite;
+                "
+              ></span>
+            </p>
+            <p class="hero-subtitle">
+              Manutenção Elétrica Predial Inteligente | Planos de Manutenção |
+              Engenharia Elétrica<br />
+              Energizando seu patrimônio com segurança e eficiência
+            </p>
+            <div class="hero-buttons">
+              <button class="energy-btn" onclick="scrollToSection('contact')">
+                <i class="fas fa-bolt"></i> Solicitar Orçamento
+              </button>
+              <button
+                class="energy-btn secondary"
+                onclick="showEmergencyModal()"
+              >
+                <i class="fas fa-exclamation-triangle"></i> Emergência
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SEÇÃO SOBRE -->
+      <section id="about">
+        <div class="section-container">
+          <h2 class="section-title">Nossa Energia</h2>
+          <p class="section-subtitle">
+            A BF ELÉTRICA é especializada em manutenção elétrica predial,
+            oferecendo soluções inteligentes para empresas, condomínios,
+            comércios e residências. Com uma equipe de engenheiros e técnicos
+            altamente qualificados, garantimos a segurança e eficiência
+            energética do seu patrimônio.
+          </p>
+
+          <div class="energy-card">
+            <div class="about-grid">
+              <div>
+                <h3><i class="fas fa-bolt"></i> Nossa História</h3>
+                <p>
+                  Fundada em 2010, a BF ELÉTRICA surgiu da necessidade de
+                  oferecer um serviço especializado em manutenção elétrica
+                  predial com planejamento e tecnologia. Começamos como uma
+                  pequena equipe e hoje atendemos mais de 200 clientes em todo o
+                  estado.
+                </p>
+                <p>
+                  Nossa missão é garantir que sua energia flua com segurança,
+                  eficiência e confiabilidade, prevenindo problemas antes que
+                  ocorram através de nossos planos de manutenção preventiva.
+                </p>
+
+                <div class="skills-container">
+                  <h3><i class="fas fa-chart-line"></i> Nossos Números</h3>
+                  <div class="skill-item">
+                    <div class="skill-info">
+                      <span>Clientes Atendidos</span>
+                      <span>200+</span>
+                    </div>
+                    <div class="energy-track">
+                      <div class="energy-progress" style="width: 100%"></div>
+                    </div>
+                  </div>
+                  <div class="skill-item">
+                    <div class="skill-info">
+                      <span>Problemas Preventidos</span>
+                      <span>95%</span>
+                    </div>
+                    <div class="energy-track">
+                      <div class="energy-progress" style="width: 95%"></div>
+                    </div>
+                  </div>
+                  <div class="skill-item">
+                    <div class="skill-info">
+                      <span>Satisfação do Cliente</span>
+                      <span>98%</span>
+                    </div>
+                    <div class="energy-track">
+                      <div class="energy-progress" style="width: 98%"></div>
+                    </div>
+                  </div>
+                  <div class="skill-item">
+                    <div class="skill-info">
+                      <span>Tempo de Resposta</span>
+                      <span>4h</span>
+                    </div>
+                    <div class="energy-track">
+                      <div class="energy-progress" style="width: 100%"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="about-image">
+                <div class="about-image-placeholder">
+                  <div style="text-align: center">
+                    <i
+                      class="fas fa-bolt"
+                      style="
+                        font-size: 3rem;
+                        color: var(--accent);
+                        margin-bottom: 1rem;
+                      "
+                    ></i>
+                    <p style="color: var(--accent)">Equipe BF ELÉTRICA</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SEÇÃO PLANOS -->
+      <section id="plans">
+        <div class="section-container">
+          <h2 class="section-title">Planos de Manutenção</h2>
+          <p class="section-subtitle">
+            Oferecemos planos de manutenção elétrica predial sob medida para
+            cada necessidade. Desde pequenos comércios até grandes condomínios e
+            indústrias, temos a solução ideal para manter sua instalação
+            elétrica segura e eficiente.
+          </p>
+
+          <div class="plans-container">
+            <!-- Plano Básico -->
+            <div class="energy-card plan-card">
+              <div class="plan-header">
+                <h3 class="plan-title">BÁSICO</h3>
+                <div class="plan-price">
+                  R$ 299<span class="plan-period">/mês</span>
+                </div>
+                <p>Para pequenos comércios e residências</p>
+              </div>
+              <div class="plan-features">
+                <div class="plan-feature">
+                  <i class="fas fa-check-circle"></i> Inspeção trimestral
+                </div>
+                <div class="plan-feature">
+                  <i class="fas fa-check-circle"></i> 2 horas de manutenção
+                  mensal
+                </div>
+                <div class="plan-feature">
+                  <i class="fas fa-check-circle"></i> Diagnóstico completo
+                </div>
+                <div class="plan-feature">
+                  <i class="fas fa-check-circle"></i> Atendimento em 24h
+                  (emergências)
+                </div>
+                <div class="plan-feature">
+                  <i class="fas fa-check-circle"></i> Relatório técnico
+                </div>
+              </div>
+              <div class="plan-cta">
+                <button class="energy-btn" style="width: 100%">
+                  Contratar Plano
+                </button>
+              </div>
+            </div>
+
+            <!-- Plano Intermediário -->
+            <div class="energy-card plan-card">
+              <div
+                class="plan-header"
+                style="background: rgba(245, 215, 66, 0.3)"
+              >
+                <h3 class="plan-title">INTERMEDIÁRIO</h3>
+                <div class="plan-price">
+                  R$ 599<span class="plan-period">/mês</span>
+                </div>
+                <p>Para médias empresas e condomínios</p>
+              </div>
+              <div class="plan-features">
+                <div class="plan-feature">
+                  <i class="fas fa-check-circle"></i> Inspeção bimestral
+                </div>
+                <div class="plan-feature">
+                  <i class="fas fa-check-circle"></i> 4 horas de manutenção
+                  mensal
+                </div>
+                <div class="plan-feature">
+                  <i class="fas fa-check-circle"></i> Diagnóstico completo +
+                  laudo
+                </div>
+                <div class="plan-feature">
+                  <i class="fas fa-check-circle"></i> Atendimento em 12h
+                  (emergências)
+                </div>
+                <div class="plan-feature">
+                  <i class="fas fa-check-circle"></i> Relatório técnico
+                  detalhado
+                </div>
+                <div class="plan-feature">
+                  <i class="fas fa-check-circle"></i> Monitoramento remoto
+                </div>
+              </div>
+              <div class="plan-cta">
+                <button class="energy-btn" style="width: 100%">
+                  Contratar Plano
+                </button>
+              </div>
+            </div>
+
+            <!-- Plano Avançado -->
+            <div class="energy-card plan-card">
+              <div
+                class="plan-header"
+                style="background: rgba(245, 215, 66, 0.4)"
+              >
+                <h3 class="plan-title">AVANÇADO</h3>
+                <div class="plan-price">
+                  R$ 999<span class="plan-period">/mês</span>
+                </div>
+                <p>Para grandes empresas e indústrias</p>
+              </div>
+              <div class="plan-features">
+                <div class="plan-feature">
+                  <i class="fas fa-check-circle"></i> Inspeção mensal
+                </div>
+                <div class="plan-feature">
+                  <i class="fas fa-check-circle"></i> 8 horas de manutenção
+                  mensal
+                </div>
+                <div class="plan-feature">
+                  <i class="fas fa-check-circle"></i> Diagnóstico completo +
+                  laudo + ART
+                </div>
+                <div class="plan-feature">
+                  <i class="fas fa-check-circle"></i> Atendimento em 6h
+                  (emergências)
+                </div>
+                <div class="plan-feature">
+                  <i class="fas fa-check-circle"></i> Relatório técnico
+                  detalhado + análise
+                </div>
+                <div class="plan-feature">
+                  <i class="fas fa-check-circle"></i> Monitoramento remoto 24/7
+                </div>
+                <div class="plan-feature">
+                  <i class="fas fa-check-circle"></i> Consultoria em eficiência
+                  energética
+                </div>
+              </div>
+              <div class="plan-cta">
+                <button class="energy-btn" style="width: 100%">
+                  Contratar Plano
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="energy-card" style="margin-top: 3rem">
+            <h3>
+              <i class="fas fa-calculator"></i> Precisa de um plano
+              personalizado?
+            </h3>
+            <p style="margin: 1rem 0 1.5rem">
+              Preencha nosso formulário de orçamento e receba uma proposta sob
+              medida para suas necessidades.
+            </p>
+
+            <div class="budget-form">
+              <div class="form-group">
+                <label class="form-label">Tipo de Imóvel</label>
+                <select class="form-control">
+                  <option>Residência</option>
+                  <option>Comércio</option>
+                  <option>Condomínio</option>
+                  <option>Indústria</option>
+                  <option>Outro</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Área Total (m²)</label>
+                <input
+                  type="number"
+                  class="form-control"
+                  placeholder="Ex: 150"
+                />
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Nível de Complexidade Elétrica</label>
+                <div class="safety-indicator">
+                  <div class="safety-level">
+                    <div class="safety-marker" style="left: 0%"></div>
+                    <div class="safety-marker" style="left: 50%"></div>
+                    <div class="safety-marker" style="left: 100%"></div>
+                  </div>
+                </div>
+                <div class="safety-labels">
+                  <span>Simples</span>
+                  <span>Médio</span>
+                  <span>Complexo</span>
+                </div>
+              </div>
+
+              <button class="energy-btn" style="width: 100%">
+                <i class="fas fa-paper-plane"></i> Solicitar Orçamento
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SEÇÃO SERVIÇOS -->
+      <section id="services">
+        <div class="section-container">
+          <h2 class="section-title">Nossos Serviços</h2>
+          <p class="section-subtitle">
+            Oferecemos uma gama completa de serviços elétricos para atender
+            todas as necessidades de seu imóvel, desde manutenção preventiva até
+            projetos complexos de engenharia elétrica.
+          </p>
+
+          <div class="services-grid">
+            <div class="energy-card service-card">
+              <div class="service-icon">
+                <i class="fas fa-clipboard-check"></i>
+              </div>
+              <h3>Manutenção Preventiva</h3>
+              <p>
+                Inspeções periódicas para identificar e corrigir problemas antes
+                que ocorram, garantindo a segurança e continuidade do
+                fornecimento elétrico.
+              </p>
+              <button class="energy-btn" style="margin-top: auto">
+                Saber Mais
+              </button>
+            </div>
+
+            <div class="energy-card service-card">
+              <div class="service-icon">
+                <i class="fas fa-tools"></i>
+              </div>
+              <h3>Manutenção Corretiva</h3>
+              <p>
+                Reparo de falhas e defeitos na instalação elétrica, com
+                atendimento rápido e eficiente para minimizar transtornos.
+              </p>
+              <button class="energy-btn" style="margin-top: auto">
+                Saber Mais
+              </button>
+            </div>
+
+            <div class="energy-card service-card">
+              <div class="service-icon">
+                <i class="fas fa-file-alt"></i>
+              </div>
+              <h3>Laudos e ART</h3>
+              <p>
+                Emissão de laudos técnicos e Anotação de Responsabilidade
+                Técnica (ART) para regularização de instalações elétricas.
+              </p>
+              <button class="energy-btn" style="margin-top: auto">
+                Saber Mais
+              </button>
+            </div>
+
+            <div class="energy-card service-card">
+              <div class="service-icon">
+                <i class="fas fa-lightbulb"></i>
+              </div>
+              <h3>Projetos Elétricos</h3>
+              <p>
+                Desenvolvimento de projetos elétricos residenciais, comerciais e
+                industriais conforme normas técnicas e legislação vigente.
+              </p>
+              <button class="energy-btn" style="margin-top: auto">
+                Saber Mais
+              </button>
+            </div>
+
+            <div class="energy-card service-card">
+              <div class="service-icon">
+                <i class="fas fa-solar-panel"></i>
+              </div>
+              <h3>Eficiência Energética</h3>
+              <p>
+                Análise e implementação de soluções para redução de consumo
+                energético, incluindo sistemas fotovoltaicos e automação.
+              </p>
+              <button class="energy-btn" style="margin-top: auto">
+                Saber Mais
+              </button>
+            </div>
+
+            <div class="energy-card service-card">
+              <div class="service-icon">
+                <i class="fas fa-shield-alt"></i>
+              </div>
+              <h3>SPDA (Para-raios)</h3>
+              <p>
+                Instalação e manutenção de Sistemas de Proteção contra Descargas
+                Atmosféricas, conforme norma NBR 5419.
+              </p>
+              <button class="energy-btn" style="margin-top: auto">
+                Saber Mais
+              </button>
+            </div>
+          </div>
+
+          <div class="energy-card" style="margin-top: 3rem">
+            <h3><i class="fas fa-history"></i> Nossos Processos</h3>
+            <p style="margin: 1rem 0 1.5rem">
+              Conheça nosso fluxo de trabalho desde o primeiro contato até a
+              conclusão do serviço.
+            </p>
+
+            <div class="timeline">
+              <div class="timeline-item left">
+                <div class="timeline-content">
+                  <h4>Diagnóstico Inicial</h4>
+                  <p>
+                    Análise completa da instalação elétrica para identificar
+                    necessidades e propor soluções.
+                  </p>
+                </div>
+              </div>
+              <div class="timeline-item right">
+                <div class="timeline-content">
+                  <h4>Proposta Comercial</h4>
+                  <p>
+                    Elaboração de orçamento detalhado com escopo, prazos e
+                    valores.
+                  </p>
+                </div>
+              </div>
+              <div class="timeline-item left">
+                <div class="timeline-content">
+                  <h4>Planejamento</h4>
+                  <p>
+                    Desenvolvimento do plano de trabalho e cronograma de
+                    execução.
+                  </p>
+                </div>
+              </div>
+              <div class="timeline-item right">
+                <div class="timeline-content">
+                  <h4>Execução</h4>
+                  <p>
+                    Realização dos serviços com equipe qualificada e
+                    equipamentos adequados.
+                  </p>
+                </div>
+              </div>
+              <div class="timeline-item left">
+                <div class="timeline-content">
+                  <h4>Testes e Ajustes</h4>
+                  <p>
+                    Verificação de todos os sistemas e correção de eventuais
+                    falhas.
+                  </p>
+                </div>
+              </div>
+              <div class="timeline-item right">
+                <div class="timeline-content">
+                  <h4>Entrega e Documentação</h4>
+                  <p>
+                    Envio de relatórios técnicos, laudos e garantia dos
+                    serviços.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SEÇÃO CLIENTES -->
+      <section id="clients">
+        <div class="section-container">
+          <h2 class="section-title">Nossos Parceiros</h2>
+          <p class="section-subtitle">
+            Confiança de empresas, condomínios e profissionais que contam com
+            nossos serviços para manter suas instalações elétricas seguras e
+            eficientes.
+          </p>
+
+          <div class="clients-filter">
+            <button class="energy-btn secondary">Todos</button>
+            <button class="energy-btn secondary">Condomínios</button>
+            <button class="energy-btn secondary">Comércios</button>
+            <button class="energy-btn secondary">Indústrias</button>
+            <button class="energy-btn secondary">Profissionais</button>
+          </div>
+
+          <div class="energy-clients">
+            <!-- Clientes Condomínios -->
+            <div class="energy-card client-card" data-client="1">
+              <h3>🏢 Condomínio Solaris</h3>
+              <span class="client-phase">Plano Avançado desde 2018</span>
+              <p style="margin: 1rem 0 1.5rem">
+                Condomínio residencial de alto padrão com 5 torres e 300
+                unidades.
+              </p>
+              <div class="energy-track">
+                <div class="energy-progress" style="width: 100%"></div>
+              </div>
+              <button class="energy-btn" style="margin-top: 1rem; width: 100%">
+                Ver Case
+              </button>
+            </div>
+
+            <div class="energy-card client-card" data-client="2">
+              <h3>🏬 Shopping Central</h3>
+              <span class="client-phase">Plano Intermediário desde 2019</span>
+              <p style="margin: 1rem 0 1.5rem">
+                Shopping center com 120 lojas e 5 salas de cinema.
+              </p>
+              <div class="energy-track">
+                <div class="energy-progress" style="width: 100%"></div>
+              </div>
+              <button class="energy-btn" style="margin-top: 1rem; width: 100%">
+                Ver Case
+              </button>
+            </div>
+
+            <!-- Clientes Comércios -->
+            <div class="energy-card client-card" data-client="3">
+              <h3>🍽️ Restaurante Sabor & Arte</h3>
+              <span class="client-phase">Plano Básico desde 2020</span>
+              <p style="margin: 1rem 0 1.5rem">
+                Restaurante conceituado com capacidade para 120 pessoas.
+              </p>
+              <div class="energy-track">
+                <div class="energy-progress" style="width: 100%"></div>
+              </div>
+              <button class="energy-btn" style="margin-top: 1rem; width: 100%">
+                Ver Case
+              </button>
+            </div>
+
+            <div class="energy-card client-card" data-client="4">
+              <h3>🏨 Hotel Brisa do Mar</h3>
+              <span class="client-phase">Plano Avançado desde 2017</span>
+              <p style="margin: 1rem 0 1.5rem">
+                Hotel 4 estrelas com 120 apartamentos e centro de eventos.
+              </p>
+              <div class="energy-track">
+                <div class="energy-progress" style="width: 100%"></div>
+              </div>
+              <button class="energy-btn" style="margin-top: 1rem; width: 100%">
+                Ver Case
+              </button>
+            </div>
+
+            <!-- Clientes Indústrias -->
+            <div class="energy-card client-card" data-client="5">
+              <h3>🏭 Indústria Metalúrgica</h3>
+              <span class="client-phase">Plano Personalizado desde 2016</span>
+              <p style="margin: 1rem 0 1.5rem">
+                Indústria com planta fabril de 15.000m² e alto consumo.
+              </p>
+              <div class="energy-track">
+                <div class="energy-progress" style="width: 100%"></div>
+              </div>
+              <button class="energy-btn" style="margin-top: 1rem; width: 100%">
+                Ver Case
+              </button>
+            </div>
+
+            <div class="energy-card client-card" data-client="6">
+              <h3>🏗️ Construtora Delta</h3>
+              <span class="client-phase">Parceiro desde 2015</span>
+              <p style="margin: 1rem 0 1.5rem">
+                Construtora com mais de 20 obras simultâneas.
+              </p>
+              <div class="energy-track">
+                <div class="energy-progress" style="width: 100%"></div>
+              </div>
+              <button class="energy-btn" style="margin-top: 1rem; width: 100%">
+                Ver Case
+              </button>
+            </div>
+
+            <!-- Clientes Profissionais -->
+            <div class="energy-card client-card" data-client="7">
+              <h3>📐 Arq. Juliana Mendes</h3>
+              <span class="client-phase">Parceiro desde 2018</span>
+              <p style="margin: 1rem 0 1.5rem">
+                Escritório de arquitetura com projetos residenciais e
+                comerciais.
+              </p>
+              <div class="energy-track">
+                <div class="energy-progress" style="width: 100%"></div>
+              </div>
+              <button class="energy-btn" style="margin-top: 1rem; width: 100%">
+                Ver Case
+              </button>
+            </div>
+
+            <div class="energy-card client-card" data-client="8">
+              <h3>🏢 Eng. Carlos Roberto</h3>
+              <span class="client-phase">Parceiro desde 2019</span>
+              <p style="margin: 1rem 0 1.5rem">
+                Engenheiro responsável por grandes obras na região.
+              </p>
+              <div class="energy-track">
+                <div class="energy-progress" style="width: 100%"></div>
+              </div>
+              <button class="energy-btn" style="margin-top: 1rem; width: 100%">
+                Ver Case
+              </button>
+            </div>
+          </div>
+
+          <div class="energy-card" style="margin-top: 3rem; text-align: center">
+            <h3>Depoimentos</h3>
+            <p style="margin: 1rem 0 1.5rem">
+              O que nossos clientes dizem sobre nossos serviços:
+            </p>
+
+            <div
+              style="
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                gap: 2rem;
+                margin-top: 2rem;
+              "
+            >
+              <div class="energy-card">
+                <div
+                  style="
+                    display: flex;
+                    align-items: center;
+                    margin-bottom: 1rem;
+                  "
+                >
+                  <div
+                    style="
+                      width: 50px;
+                      height: 50px;
+                      background: rgba(245, 215, 66, 0.2);
+                      border-radius: 50%;
+                      display: flex;
+                      align-items: center;
+                      justify-content: center;
+                      margin-right: 1rem;
+                    "
+                  >
+                    <i
+                      class="fas fa-user"
+                      style="font-size: 1.5rem; color: var(--accent)"
+                    ></i>
+                  </div>
+                  <div>
+                    <h4 style="color: var(--accent)">Roberto Silva</h4>
+                    <p style="font-size: 0.9rem; opacity: 0.8">
+                      Síndico - Condomínio Solaris
+                    </p>
+                  </div>
+                </div>
+                <p style="font-style: italic">
+                  "A BF ELÉTRICA revolucionou nossa manutenção predial. Desde
+                  que contratamos o plano avançado, não tivemos mais problemas
+                  com nossa instalação elétrica."
+                </p>
+                <div style="margin-top: 1rem; color: var(--accent)">
+                  <i class="fas fa-star"></i>
+                  <i class="fas fa-star"></i>
+                  <i class="fas fa-star"></i>
+                  <i class="fas fa-star"></i>
+                  <i class="fas fa-star"></i>
+                </div>
+              </div>
+
+              <div class="energy-card">
+                <div
+                  style="
+                    display: flex;
+                    align-items: center;
+                    margin-bottom: 1rem;
+                  "
+                >
+                  <div
+                    style="
+                      width: 50px;
+                      height: 50px;
+                      background: rgba(245, 215, 66, 0.2);
+                      border-radius: 50%;
+                      display: flex;
+                      align-items: center;
+                      justify-content: center;
+                      margin-right: 1rem;
+                    "
+                  >
+                    <i
+                      class="fas fa-user"
+                      style="font-size: 1.5rem; color: var(--accent)"
+                    ></i>
+                  </div>
+                  <div>
+                    <h4 style="color: var(--accent)">Ana Paula Oliveira</h4>
+                    <p style="font-size: 0.9rem; opacity: 0.8">
+                      Gerente - Hotel Brisa do Mar
+                    </p>
+                  </div>
+                </div>
+                <p style="font-style: italic">
+                  "O atendimento em emergências é impressionante. Já nos
+                  salvaram em várias situações críticas, sempre com
+                  profissionalismo e agilidade."
+                </p>
+                <div style="margin-top: 1rem; color: var(--accent)">
+                  <i class="fas fa-star"></i>
+                  <i class="fas fa-star"></i>
+                  <i class="fas fa-star"></i>
+                  <i class="fas fa-star"></i>
+                  <i class="fas fa-star"></i>
+                </div>
+              </div>
+
+              <div class="energy-card">
+                <div
+                  style="
+                    display: flex;
+                    align-items: center;
+                    margin-bottom: 1rem;
+                  "
+                >
+                  <div
+                    style="
+                      width: 50px;
+                      height: 50px;
+                      background: rgba(245, 215, 66, 0.2);
+                      border-radius: 50%;
+                      display: flex;
+                      align-items: center;
+                      justify-content: center;
+                      margin-right: 1rem;
+                    "
+                  >
+                    <i
+                      class="fas fa-user"
+                      style="font-size: 1.5rem; color: var(--accent)"
+                    ></i>
+                  </div>
+                  <div>
+                    <h4 style="color: var(--accent)">Carlos Eduardo</h4>
+                    <p style="font-size: 0.9rem; opacity: 0.8">
+                      Diretor - Indústria Metalúrgica
+                    </p>
+                  </div>
+                </div>
+                <p style="font-style: italic">
+                  "A consultoria em eficiência energética nos ajudou a reduzir
+                  30% no consumo de energia, com um ROI incrivelmente rápido."
+                </p>
+                <div style="margin-top: 1rem; color: var(--accent)">
+                  <i class="fas fa-star"></i>
+                  <i class="fas fa-star"></i>
+                  <i class="fas fa-star"></i>
+                  <i class="fas fa-star"></i>
+                  <i class="fas fa-star-half-alt"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SEÇÃO CONTATO -->
+      <section id="contact">
+        <div class="section-container">
+          <h2 class="section-title">Fale Conosco</h2>
+          <p class="section-subtitle">
+            Pronto para energizar seu patrimônio com segurança e eficiência?
+            Entre em contato através dos nossos canais ou preencha o formulário.
+          </p>
+
+          <div class="energy-card">
+            <div class="contact-grid">
+              <div>
+                <h3><i class="fas fa-map-marked-alt"></i> Nossa Localização</h3>
+
+                <div class="contact-info-item">
+                  <div class="contact-icon">
+                    <i class="fas fa-envelope"></i>
+                  </div>
+                  <div>
+                    <h4>E-mail</h4>
+                    <p>contato@bfeletrica.com.br</p>
+                  </div>
+                </div>
+
+                <div class="contact-info-item">
+                  <div class="contact-icon">
+                    <i class="fas fa-phone-alt"></i>
+                  </div>
+                  <div>
+                    <h4>Telefone</h4>
+                    <p>(21) 1234-5678</p>
+                  </div>
+                </div>
+
+                <div class="contact-info-item">
+                  <div class="contact-icon">
+                    <i class="fas fa-map-marker-alt"></i>
+                  </div>
+                  <div>
+                    <h4>Endereço</h4>
+                    <p>Av. das Instalações, 123 - Centro, Rio de Janeiro/RJ</p>
+                  </div>
+                </div>
+
+                <h3 style="margin-top: 2rem">
+                  <i class="fas fa-share-alt"></i> Redes Sociais
+                </h3>
+                <div class="social-links">
+                  <a
+                    href="https://linkedin.com"
+                    class="social-link"
+                    target="_blank"
+                    title="LinkedIn"
+                  >
+                    <i class="fab fa-linkedin-in"></i>
+                  </a>
+                  <a
+                    href="https://facebook.com"
+                    class="social-link"
+                    target="_blank"
+                    title="Facebook"
+                  >
+                    <i class="fab fa-facebook-f"></i>
+                  </a>
+                  <a
+                    href="https://instagram.com"
+                    class="social-link"
+                    target="_blank"
+                    title="Instagram"
+                  >
+                    <i class="fab fa-instagram"></i>
+                  </a>
+                  <a
+                    href="https://youtube.com"
+                    class="social-link"
+                    target="_blank"
+                    title="YouTube"
+                  >
+                    <i class="fab fa-youtube"></i>
+                  </a>
+                  <a
+                    href="https://wa.me/552112345678"
+                    class="social-link"
+                    target="_blank"
+                    title="WhatsApp"
+                  >
+                    <i class="fab fa-whatsapp"></i>
+                  </a>
+                </div>
+              </div>
+
+              <div>
+                <h3><i class="fas fa-paper-plane"></i> Mensagem Rápida</h3>
+                <form id="energyForm" class="contact-form">
+                  <div>
+                    <label>Seu Nome</label>
+                    <input
+                      type="text"
+                      placeholder="Como devo te chamar?"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label>Seu E-mail</label>
+                    <input type="email" placeholder="seu@email.com" required />
+                  </div>
+                  <div>
+                    <label>Assunto</label>
+                    <select required>
+                      <option value="">Selecione um assunto</option>
+                      <option>Orçamento</option>
+                      <option>Planos de Manutenção</option>
+                      <option>Emergência</option>
+                      <option>Dúvidas</option>
+                      <option>Outro</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label>Sua Mensagem</label>
+                    <textarea
+                      placeholder="Descreva sua necessidade..."
+                      rows="5"
+                      required
+                    ></textarea>
+                  </div>
+                  <button
+                    type="submit"
+                    class="energy-btn"
+                    style="width: 100%; padding: 1rem; font-size: 1.1rem"
+                  >
+                    <i class="fas fa-paper-plane"></i> Enviar Mensagem
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
+
+          <div class="energy-card" style="margin-top: 3rem; text-align: center">
+            <h3><i class="fas fa-clock"></i> Horário de Funcionamento</h3>
+            <div
+              style="
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+                gap: 1rem;
+                margin-top: 1.5rem;
+              "
+            >
+              <div>
+                <h4 style="color: var(--accent)">Segunda - Sexta</h4>
+                <p>8:00 - 18:00</p>
+              </div>
+              <div>
+                <h4 style="color: var(--accent)">Sábado</h4>
+                <p>9:00 - 13:00</p>
+              </div>
+              <div>
+                <h4 style="color: var(--accent)">Domingo</h4>
+                <p>Fechado</p>
+              </div>
+              <div>
+                <h4 style="color: var(--accent)">Emergências</h4>
+                <p>24/7</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- PORTAL DE CLIENTES -->
+    <div class="client-portal" id="clientPortal">
+      <div class="client-energy" id="clientEnergy">
+        <button class="close-portal">&times;</button>
+        <div id="clientContent"></div>
+      </div>
+    </div>
+
+    <!-- MODAL DE EMERGÊNCIA -->
+    <div class="emergency-modal" id="emergencyModal">
+      <div class="emergency-content">
+        <button class="emergency-close" onclick="hideEmergencyModal()">
+          &times;
+        </button>
+        <h2 style="color: var(--danger); margin-bottom: 1rem">
+          <i class="fas fa-exclamation-triangle"></i> Emergência Elétrica
+        </h2>
+        <p style="margin-bottom: 1.5rem">
+          Preencha o formulário abaixo para acionar nosso time de emergência 24
+          horas.
+        </p>
+
+        <form id="emergencyForm">
+          <div class="form-group">
+            <label class="form-label">Seu Nome</label>
+            <input
+              type="text"
+              class="form-control"
+              placeholder="Nome completo"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Telefone para Contato</label>
+            <input
+              type="tel"
+              class="form-control"
+              placeholder="(21) 98765-4321"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Endereço do Problema</label>
+            <input
+              type="text"
+              class="form-control"
+              placeholder="Endereço completo"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Tipo de Emergência</label>
+            <select class="form-control" required>
+              <option value="">Selecione...</option>
+              <option>Choque Elétrico</option>
+              <option>Curto-Circuito</option>
+              <option>Queda de Energia</option>
+              <option>Incêndio Elétrico</option>
+              <option>Outro</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Descrição da Emergência</label>
+            <textarea
+              class="form-control"
+              rows="3"
+              placeholder="Descreva a situação com detalhes"
+              required
+            ></textarea>
+          </div>
+
+          <div style="display: flex; gap: 1rem; margin-top: 2rem">
+            <button type="submit" class="energy-btn danger" style="flex: 1">
+              <i class="fas fa-bolt"></i> Acionar Emergência
+            </button>
+            <button
+              type="button"
+              onclick="hideEmergencyModal()"
+              class="energy-btn secondary"
+              style="flex: 1"
+            >
+              <i class="fas fa-times"></i> Cancelar
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- EFEITO DE ENERGIA -->
+    <div class="energy-effect" id="energyEffect"></div>
+
+    <!-- Botão de Menu Flutuante -->
+    <div
+      class="floating-menu-btn"
+      id="floatingMenuBtn"
+      style="display: flex !important; z-index: 99999 !important"
+    >
+      <i class="fas fa-bars"></i>
+    </div>
+
+    <!-- Menu Flutuante -->
+    <div class="floating-menu" id="floatingMenu">
+      <a href="#" onclick="scrollToSection('home')"
+        ><i class="fas fa-home"></i> Início</a
+      >
+      <a href="#" onclick="scrollToSection('about')"
+        ><i class="fas fa-building"></i> Sobre</a
+      >
+      <a href="#" onclick="scrollToSection('services')"
+        ><i class="fas fa-tools"></i> Serviços</a
+      >
+      <a href="#" onclick="scrollToSection('contact')"
+        ><i class="fas fa-envelope"></i> Contato</a
+      >
+      <a href="#" onclick="showEmergencyModal()"
+        ><i class="fas fa-exclamation-triangle"></i> Emergência</a
+      >
+    </div>
+
+    <script>
+      // INICIALIZAÇÃO DOS CIRCUITOS
+      document.addEventListener("DOMContentLoaded", function () {
+        const circuitBg = document.getElementById("circuitBg");
+        // Criar nós de circuito
+        for (let i = 0; i < 30; i++) {
+          const node = document.createElement("div");
+          node.className = "circuit-node";
+          node.style.left = `${Math.random() * 100}%`;
+          node.style.top = `${Math.random() * 100}%`;
+          node.style.animationDelay = `${Math.random() * 2}s`;
+          circuitBg.appendChild(node);
+        }
+        // FAÍSCAS DE ENERGIA
+        const sparksContainer = document.getElementById("sparks");
+        const sparkCount = window.innerWidth < 768 ? 30 : 50;
+        for (let i = 0; i < sparkCount; i++) {
+          const spark = document.createElement("div");
+          spark.className = "spark-particle";
+          const size = Math.random() * 5 + 1;
+          spark.style.width = `${size}px`;
+          spark.style.height = `${size}px`;
+          spark.style.left = `${Math.random() * 100}%`;
+          spark.style.top = `${Math.random() * 100}%`;
+          const duration = Math.random() * 20 + 10;
+          const delay = Math.random() * 10;
+          spark.style.animation = `sparkFloat ${duration}s linear ${delay}s infinite`;
+          sparksContainer.appendChild(spark);
+        }
+        // NAVEGAÇÃO ENERGÉTICA
+        const navFuses = document.querySelectorAll(".nav-fuse");
+        const sections = document.querySelectorAll("section");
+        navFuses.forEach((fuse) => {
+          fuse.addEventListener("click", function () {
+            // Ativa fusível selecionado
+            navFuses.forEach((f) => f.classList.remove("active"));
+            this.classList.add("active");
+            // Ativa seção correspondente
+            const sectionId = this.dataset.section;
+            sections.forEach((section) => {
+              section.classList.remove("active");
+              if (section.id === sectionId) {
+                section.classList.add("active");
+                createEnergyEffect();
+                // Rolagem suave para a seção
+                setTimeout(() => {
+                  section.scrollIntoView({
+                    behavior: "smooth",
+                  });
+                }, 100);
+              }
+            });
+          });
+        });
+        // TROCA DE TEMAS
+        const themeOptions = document.querySelectorAll(".theme-option");
+        themeOptions.forEach((option) => {
+          option.addEventListener("click", function () {
+            themeOptions.forEach((o) => o.classList.remove("active"));
+            this.classList.add("active");
+            document.body.className = `${this.dataset.theme}-theme`;
+            createEnergyEffect();
+          });
+        });
+        // PORTAL DE CLIENTES
+        const clientCards = document.querySelectorAll(".client-card");
+        const clientPortal = document.getElementById("clientPortal");
+        const clientContent = document.getElementById("clientContent");
+        const closePortal = document.querySelector(".close-portal");
+        clientCards.forEach((card) => {
+          card.addEventListener("click", function (e) {
+            if (e.target.classList.contains("energy-btn")) return;
+            const clientId = this.dataset.client;
+            loadClientPortal(clientId);
+          });
+          const btn = card.querySelector(".energy-btn");
+          if (btn) {
+            btn.addEventListener("click", function (e) {
+              e.stopPropagation();
+              const clientId = card.dataset.client;
+              loadClientPortal(clientId);
+            });
+          }
+        });
+        closePortal.addEventListener("click", function () {
+          clientPortal.style.display = "none";
+          createEnergyEffect();
+        });
+
+        function loadClientPortal(clientId) {
+          const clients = [
+            {
+              id: 1,
+              name: "Condomínio Solaris",
+              type: "Condomínio Residencial",
+              since: "2018",
+              plan: "Avançado",
+              description:
+                "Condomínio de alto padrão com 5 torres e 300 unidades. Antes da BF ELÉTRICA, sofriam com constantes quedas de energia e disparos de disjuntores.",
+              services: [
+                "Manutenção Preventiva",
+                "Monitoramento 24/7",
+                "Eficiência Energética",
+              ],
+              quote:
+                "Reduzimos em 80% os problemas elétricos após a implementação do plano avançado. A equipe da BF é extremamente profissional e atenciosa.",
+              logo: "🏢",
+              results: [
+                "80% redução em problemas",
+                "15% economia de energia",
+                "100% satisfação",
+              ],
+            },
+            {
+              id: 2,
+              name: "Shopping Central",
+              type: "Shopping Center",
+              since: "2019",
+              plan: "Intermediário",
+              description:
+                "Shopping com 120 lojas e 5 salas de cinema. Necessitava de um plano que garantisse continuidade de energia para todas as operações.",
+              services: [
+                "Manutenção Preventiva",
+                "Laudos Técnicos",
+                "Atendimento Emergencial",
+              ],
+              quote:
+                "Em 3 anos de contrato, nunca tivemos que fechar o shopping por problemas elétricos. O atendimento em emergências é rápido e eficiente.",
+              logo: "🏬",
+              results: [
+                "0 interrupções críticas",
+                "Laudos sempre em dia",
+                "Atendimento em <6h",
+              ],
+            },
+            {
+              id: 3,
+              name: "Restaurante Sabor & Arte",
+              type: "Restaurante",
+              since: "2020",
+              plan: "Básico",
+              description:
+                "Restaurante conceituado com capacidade para 120 pessoas. Problemas com instalação antiga e falta de manutenção preventiva.",
+              services: [
+                "Manutenção Preventiva",
+                "Atualização da Instalação",
+                "Orientações de Segurança",
+              ],
+              quote:
+                "A BF nos ajudou a modernizar nossa instalação elétrica e implementar um plano de manutenção que cabe no nosso orçamento. Recomendo!",
+              logo: "🍽️",
+              results: [
+                "Instalação modernizada",
+                "0 problemas desde 2021",
+                "Custo-benefício excelente",
+              ],
+            },
+            {
+              id: 4,
+              name: "Hotel Brisa do Mar",
+              type: "Hotel",
+              since: "2017",
+              plan: "Avançado",
+              description:
+                "Hotel 4 estrelas com 120 apartamentos e centro de eventos. Necessidade de garantir energia ininterrupta para hóspedes e eventos.",
+              services: [
+                "Manutenção Preventiva",
+                "SPDA",
+                "Geradores",
+                "Monitoramento 24/7",
+              ],
+              quote:
+                "A BF ELÉTRICA é nosso parceiro estratégico. Sua equipe nos ajudou a implementar um sistema de energia confiável que é um diferencial para nosso hotel.",
+              logo: "🏨",
+              results: [
+                "100% disponibilidade",
+                "SPDA certificado",
+                "Atendimento em <4h",
+              ],
+            },
+            {
+              id: 5,
+              name: "Indústria Metalúrgica",
+              type: "Indústria",
+              since: "2016",
+              plan: "Personalizado",
+              description:
+                "Indústria com planta fabril de 15.000m² e alto consumo. Desafios com equipamentos pesados e necessidade de redução de custos.",
+              services: [
+                "Manutenção Industrial",
+                "Projetos Elétricos",
+                "Eficiência Energética",
+                "Laudos",
+              ],
+              quote:
+                "A consultoria em eficiência energética nos ajudou a reduzir 30% no consumo, com retorno do investimento em menos de 2 anos. Excelente parceiro!",
+              logo: "🏭",
+              results: [
+                "30% economia",
+                "Projetos sob medida",
+                "Conformidade total",
+              ],
+            },
+            {
+              id: 6,
+              name: "Construtora Delta",
+              type: "Construtora",
+              since: "2015",
+              plan: "Parceiro",
+              description:
+                "Construtora com mais de 20 obras simultâneas. Necessidade de padronização e qualidade em todas as instalações elétricas.",
+              services: [
+                "Projetos Elétricos",
+                "Supervisão",
+                "Laudos",
+                "Treinamentos",
+              ],
+              quote:
+                "A BF é nossa extensão técnica. Garantem que todas nossas obras tenham instalações elétricas seguras e dentro das normas.",
+              logo: "🏗️",
+              results: [
+                "100% das obras dentro das normas",
+                "0 interdições",
+                "Equipe treinada",
+              ],
+            },
+            {
+              id: 7,
+              name: "Arq. Juliana Mendes",
+              type: "Arquiteta",
+              since: "2018",
+              plan: "Parceiro",
+              description:
+                "Escritório de arquitetura com projetos residenciais e comerciais. Necessidade de parceiro confiável para projetos elétricos.",
+              services: ["Projetos Elétricos", "Consultoria", "Acompanhamento"],
+              quote:
+                "Indico a BF para todos meus clientes. Seus projetos são impecáveis e sempre dentro do prazo. Um diferencial para meus trabalhos.",
+              logo: "📐",
+              results: [
+                "Projetos precisos",
+                "Prazos cumpridos",
+                "Clientes satisfeitos",
+              ],
+            },
+            {
+              id: 8,
+              name: "Eng. Carlos Roberto",
+              type: "Engenheiro",
+              since: "2019",
+              plan: "Parceiro",
+              description:
+                "Engenheiro responsável por grandes obras na região. Necessidade de parceiro técnico para assinar ART e garantir qualidade.",
+              services: ["ART", "Laudos", "Vistoria", "Consultoria Técnica"],
+              quote:
+                "A equipe técnica da BF é altamente qualificada. Confio neles para assinar ART em meus projetos e nunca tive problemas.",
+              logo: "🏢",
+              results: ["ARTs precisas", "Respeito às normas", "Agilidade"],
+            },
+          ];
+          const client = clients.find((c) => c.id == clientId);
+          if (client) {
+            clientContent.innerHTML = `
+                          <div class="client-content">
+                              <div style="display: flex; align-items: center; margin-bottom: 2rem;">
+                                  <div style="font-size: 3rem; margin-right: 1.5rem;">${
+                                    client.logo
+                                  }</div>
+                                  <div>
+                                      <h2 style="color: var(--accent); font-size: 2.5rem; margin-bottom: 0.5rem;">${
+                                        client.name
+                                      }</h2>
+                                      <p style="font-size: 1.2rem;">${
+                                        client.type
+                                      } | Plano ${client.plan} desde ${
+              client.since
+            }</p>
+                                  </div>
+                              </div>
+
+                              <div class="energy-card" style="margin-bottom: 2rem;">
+                                  <h3 style="color: var(--accent); margin-bottom: 1rem;"><i class="fas fa-info-circle"></i> Desafio Inicial</h3>
+                                  <p style="line-height: 1.8;">${
+                                    client.description
+                                  }</p>
+                              </div>
+
+                              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem;">
+                                  <div class="energy-card">
+                                      <h3 style="color: var(--accent); margin-bottom: 1rem;"><i class="fas fa-cogs"></i> Serviços Prestados</h3>
+                                      <ul style="padding-left: 1.5rem; line-height: 1.8;">
+                                          ${client.services
+                                            .map(
+                                              (service) => `<li>${service}</li>`
+                                            )
+                                            .join("")}
+                                      </ul>
+                                  </div>
+
+                                  <div class="energy-card">
+                                      <h3 style="color: var(--accent); margin-bottom: 1rem;"><i class="fas fa-chart-line"></i> Resultados</h3>
+                                      <ul style="padding-left: 1.5rem; line-height: 1.8;">
+                                          ${client.results
+                                            .map(
+                                              (result) => `<li>${result}</li>`
+                                            )
+                                            .join("")}
+                                      </ul>
+                                  </div>
+                              </div>
+
+                              <div class="energy-card" style="margin-bottom: 2rem;">
+                                  <h3 style="color: var(--accent); margin-bottom: 1rem;"><i class="fas fa-quote-left"></i> Depoimento</h3>
+                                  <p style="font-style: italic; line-height: 1.8; position: relative; padding-left: 2rem;">
+                                      <i class="fas fa-quote-left" style="position: absolute; left: 0; top: 0; color: var(--accent); opacity: 0.3; font-size: 1.5rem;"></i>
+                                      ${client.quote}
+                                  </p>
+                              </div>
+
+                              <div style="display: flex; justify-content: space-between; margin-top: 2rem; flex-wrap: wrap; gap: 1rem;">
+                                  <button class="energy-btn" onclick="scrollToSection('contact')">
+                                      <i class="fas fa-envelope"></i> Contatar BF ELÉTRICA
+                                  </button>
+                                  <button class="energy-btn secondary" onclick="document.getElementById('clientPortal').style.display='none'; createEnergyEffect();">
+                                      <i class="fas fa-times"></i> Fechar
+                                  </button>
+                              </div>
+                          </div>
+                      `;
+            clientPortal.style.display = "flex";
+            createEnergyEffect();
+          }
+        }
+        // EFEITO DE ENERGIA
+        function createEnergyEffect() {
+          const energy = document.getElementById("energyEffect");
+          energy.style.animation = "none";
+          void energy.offsetWidth;
+          energy.style.animation = "energySurge 1s ease-out";
+          setTimeout(() => {
+            energy.style.opacity = "0";
+          }, 1000);
+        }
+        // ANIMAÇÃO DE DIGITAÇÃO
+        const typingElement = document.querySelector(".typing-animation");
+        const texts = [
+          "Manutenção Elétrica Predial",
+          "Planos de Manutenção",
+          "Engenharia Elétrica",
+          "Eficiência Energética",
+          "Segurança em Instalações",
+          "Atendimento Emergencial",
+        ];
+        let textIndex = 0;
+        let charIndex = 0;
+        let isDeleting = false;
+        let typingSpeed = 150;
+
+        function type() {
+          const currentText = texts[textIndex];
+          if (isDeleting) {
+            typingElement.textContent = currentText.substring(0, charIndex - 1);
+            charIndex--;
+            typingSpeed = 100;
+          } else {
+            typingElement.textContent = currentText.substring(0, charIndex + 1);
+            charIndex++;
+            typingSpeed = charIndex % 3 === 0 ? 100 + Math.random() * 100 : 150;
+          }
+          if (!isDeleting && charIndex === currentText.length) {
+            isDeleting = true;
+            typingSpeed = 2000;
+          } else if (isDeleting && charIndex === 0) {
+            isDeleting = false;
+            textIndex = (textIndex + 1) % texts.length;
+            typingSpeed = 500;
+          }
+          setTimeout(type, typingSpeed);
+        }
+        setTimeout(type, 1000);
+        // FORMULÁRIO DE CONTATO
+        const energyForm = document.getElementById("energyForm");
+        energyForm.addEventListener("submit", function (e) {
+          e.preventDefault();
+          const submitBtn = this.querySelector('button[type="submit"]');
+          const originalText = submitBtn.innerHTML;
+          submitBtn.innerHTML =
+            '<i class="fas fa-spinner fa-spin"></i> Enviando...';
+          submitBtn.disabled = true;
+          // Simulação de envio
+          setTimeout(() => {
+            submitBtn.innerHTML =
+              '<i class="fas fa-check"></i> Mensagem Enviada!';
+            this.reset();
+            setTimeout(() => {
+              submitBtn.innerHTML = originalText;
+              submitBtn.disabled = false;
+            }, 2000);
+          }, 1500);
+        });
+        // FORMULÁRIO DE EMERGÊNCIA
+        const emergencyForm = document.getElementById("emergencyForm");
+        emergencyForm.addEventListener("submit", function (e) {
+          e.preventDefault();
+          const submitBtn = this.querySelector('button[type="submit"]');
+          const originalText = submitBtn.innerHTML;
+          submitBtn.innerHTML =
+            '<span class="energy-loader" style="border-top-color: white;"></span> Acionando...';
+          submitBtn.disabled = true;
+          // Simulação de envio
+          setTimeout(() => {
+            submitBtn.innerHTML =
+              '<i class="fas fa-check"></i> Equipe Acionada!';
+            alert(
+              "Nossa equipe de emergência foi acionada e estará no local em breve. Mantenha o telefone informado disponível para contato."
+            );
+            this.reset();
+            hideEmergencyModal();
+            setTimeout(() => {
+              submitBtn.innerHTML = originalText;
+              submitBtn.disabled = false;
+            }, 2000);
+          }, 3000);
+        });
+        // MODAL DE EMERGÊNCIA
+        function showEmergencyModal() {
+          document.getElementById("emergencyModal").classList.add("active");
+          createEnergyEffect();
+        }
+
+        function hideEmergencyModal() {
+          document.getElementById("emergencyModal").classList.remove("active");
+        }
+        // ROLAGEM SUAVE PARA SEÇÕES
+        window.scrollToSection = function (sectionId) {
+          const section = document.getElementById(sectionId);
+          if (section) {
+            section.scrollIntoView({
+              behavior: "smooth",
+            });
+            createEnergyEffect();
+            // Ativa a seção correspondente na navegação
+            navFuses.forEach((fuse) => {
+              fuse.classList.remove("active");
+              if (fuse.dataset.section === sectionId) {
+                fuse.classList.add("active");
+              }
+            });
+          }
+        };
+        // OBSERVADOR DE INTERSEÇÃO PARA ANIMAÇÕES
+        const observerOptions = {
+          threshold: 0.1,
+        };
+        const observer = new IntersectionObserver((entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add("animate");
+            }
+          });
+        }, observerOptions);
+        document
+          .querySelectorAll(".energy-card, .section-title")
+          .forEach((element) => {
+            observer.observe(element);
+          });
+        // Menu Flutuante
+        const floatingMenuBtn = document.getElementById("floatingMenuBtn");
+        const floatingMenu = document.getElementById("floatingMenu");
+        floatingMenuBtn.style.display = "flex"; // Força o botão a ser exibido
+
+        // Mostrar menu flutuante
+        floatingMenuBtn.addEventListener("click", function () {
+          if (floatingMenu.style.display === "flex") {
+            floatingMenu.style.display = "none";
+            this.innerHTML = '<i class="fas fa-bars"></i>';
+          } else {
+            floatingMenu.style.display = "flex";
+            this.innerHTML = '<i class="fas fa-times"></i>';
+          }
+          createEnergyEffect();
+        });
+        // Fechar menu ao clicar fora
+        document.addEventListener("click", function (event) {
+          if (!floatingMenu.contains(event.target)) {
+            if (
+              event.target !== floatingMenuBtn &&
+              !floatingMenuBtn.contains(event.target)
+            ) {
+              floatingMenu.style.display = "none";
+              floatingMenuBtn.innerHTML = '<i class="fas fa-bars"></i>';
+            }
+          }
+        });
+        // CARREGAMENTO INICIAL
+        createEnergyEffect();
+      });
+    </script>
+  </body>
+</html>
